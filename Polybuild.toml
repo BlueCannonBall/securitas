@@ -1,0 +1,12 @@
+[paths]
+output = "securitas"
+source = [".", "Polyweb", "Polyweb/Polynet"]
+artifact = "obj"
+install = "/usr/local/bin"
+
+[options]
+compilation-flags = "-Wall -std=c++17 -O3 -pthread"
+libraries = ["ssl", "crypto"]
+
+[env.OS.Windows_NT.options]
+libraries = ["ssl", "crypto", "ws2_32"]
