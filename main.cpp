@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     server->route("/",
         pw::HTTPRoute {
             [](const pw::Connection& conn, const pw::HTTPRequest& req, void* data) {
-                std::cout << '[' << pw::build_date() << "] " << sockaddr_to_string(&conn.addr) << " - \"" << req.method << ' ' << req.target << ' ' << req.http_version << "\"" << std::endl;
+                std::cout << "☝️ [" << pw::build_date() << "] " << sockaddr_to_string(&conn.addr) << " - \"" << req.method << ' ' << req.target << ' ' << req.http_version << "\"" << std::endl;
 
                 pw::URLInfo url_info;
                 url_info.scheme = "https";
