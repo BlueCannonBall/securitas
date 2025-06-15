@@ -9,8 +9,9 @@ compilation-flags = "-Wall -std=c++17 -O3 -pthread"
 libraries = ["ssl", "crypto"]
 
 [env.OS.Windows_NT.paths]
-library = ["\"$(OPENSSL_ROOT_DIR)\"/lib/VC/x64/MD"]
+library = ["\"$(OPENSSL_ROOT_DIR)\"/lib"]
+install = "C:\\Windows\\System32"
 
 [env.OS.Windows_NT.options]
 compilation-flags = "/W3 /std:c++20 /EHsc /I\"$(OPENSSL_ROOT_DIR)\"/include /Ox"
-libraries = ["libssl.lib", "libcrypto.lib", "ws2_32.lib"]
+libraries = ["libssl.lib", "libcrypto.lib", "advapi32.lib", "crypt32.lib", "ws2_32.lib"]

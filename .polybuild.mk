@@ -29,23 +29,19 @@ compiler := $(CXX)
 compilation_flags := -Wall -std=c++17 -O3 -pthread $(dynamic_flag)
 link_time_flags := $(LDFLAGS)
 libraries := $(library_flag)ssl $(library_flag)crypto
+prefix := /usr/local/bin
 
 ifeq ($(OS),Windows_NT)
 	compilation_flags := /W3 /std:c++20 /EHsc /I"$(OPENSSL_ROOT_DIR)"/include /Ox $(dynamic_flag)
-	link_time_flags := $(LDFLAGS) $(library_path_flag)"$(OPENSSL_ROOT_DIR)"/lib/VC/x64/MD
-	libraries := $(library_flag)libssl.lib $(library_flag)libcrypto.lib $(library_flag)ws2_32.lib
+	link_time_flags := $(LDFLAGS) $(library_path_flag)"$(OPENSSL_ROOT_DIR)"/lib
+	libraries := $(library_flag)libssl.lib $(library_flag)libcrypto.lib $(library_flag)advapi32.lib $(library_flag)crypt32.lib $(library_flag)ws2_32.lib
+	prefix := C:\Windows\System32
 endif
 
 all: securitas$(out_ext)
 .PHONY: all
 
 obj/main_0$(obj_ext): ./main.cpp ./Polyweb/polyweb.hpp ./Polyweb/Polynet/polynet.hpp ./Polyweb/Polynet/string.hpp ./Polyweb/Polynet/secure_sockets.hpp ./Polyweb/Polynet/smart_sockets.hpp ./Polyweb/string.hpp ./Polyweb/threadpool.hpp
-	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Compiling $@ from $<..."
-	@mkdir -p obj
-	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
-	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished compiling $@ from $<!"
-
-obj/string_0$(obj_ext): Polyweb/string.cpp Polyweb/string.hpp Polyweb/Polynet/string.hpp
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Compiling $@ from $<..."
 	@mkdir -p obj
 	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
@@ -63,13 +59,19 @@ obj/polyweb_0$(obj_ext): Polyweb/polyweb.cpp Polyweb/polyweb.hpp Polyweb/Polynet
 	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished compiling $@ from $<!"
 
-obj/websocket_0$(obj_ext): Polyweb/websocket.cpp Polyweb/polyweb.hpp Polyweb/Polynet/polynet.hpp Polyweb/Polynet/string.hpp Polyweb/Polynet/secure_sockets.hpp Polyweb/Polynet/smart_sockets.hpp Polyweb/string.hpp Polyweb/threadpool.hpp
+obj/server_0$(obj_ext): Polyweb/server.cpp Polyweb/polyweb.hpp Polyweb/Polynet/polynet.hpp Polyweb/Polynet/string.hpp Polyweb/Polynet/secure_sockets.hpp Polyweb/Polynet/smart_sockets.hpp Polyweb/string.hpp Polyweb/threadpool.hpp
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Compiling $@ from $<..."
 	@mkdir -p obj
 	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished compiling $@ from $<!"
 
-obj/server_0$(obj_ext): Polyweb/server.cpp Polyweb/polyweb.hpp Polyweb/Polynet/polynet.hpp Polyweb/Polynet/string.hpp Polyweb/Polynet/secure_sockets.hpp Polyweb/Polynet/smart_sockets.hpp Polyweb/string.hpp Polyweb/threadpool.hpp
+obj/string_0$(obj_ext): Polyweb/string.cpp Polyweb/string.hpp Polyweb/Polynet/string.hpp
+	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Compiling $@ from $<..."
+	@mkdir -p obj
+	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
+	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished compiling $@ from $<!"
+
+obj/websocket_0$(obj_ext): Polyweb/websocket.cpp Polyweb/polyweb.hpp Polyweb/Polynet/polynet.hpp Polyweb/Polynet/string.hpp Polyweb/Polynet/secure_sockets.hpp Polyweb/Polynet/smart_sockets.hpp Polyweb/string.hpp Polyweb/threadpool.hpp
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Compiling $@ from $<..."
 	@mkdir -p obj
 	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
@@ -87,7 +89,7 @@ obj/secure_sockets_0$(obj_ext): Polyweb/Polynet/secure_sockets.cpp Polyweb/Polyn
 	@"$(compiler)" $(compile_only_flag) $< $(compilation_flags) $(obj_path_flag)$@
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished compiling $@ from $<!"
 
-securitas$(out_ext): obj/main_0$(obj_ext) obj/string_0$(obj_ext) obj/client_0$(obj_ext) obj/polyweb_0$(obj_ext) obj/websocket_0$(obj_ext) obj/server_0$(obj_ext) obj/polynet_0$(obj_ext) obj/secure_sockets_0$(obj_ext) $(static_libraries)
+securitas$(out_ext): obj/main_0$(obj_ext) obj/client_0$(obj_ext) obj/polyweb_0$(obj_ext) obj/server_0$(obj_ext) obj/string_0$(obj_ext) obj/websocket_0$(obj_ext) obj/polynet_0$(obj_ext) obj/secure_sockets_0$(obj_ext) $(static_libraries)
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Building $@..."
 	@"$(compiler)" $^ $(compilation_flags) $(out_path_flag)$@ $(link_flag) $(link_time_flags) $(libraries)
 	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished building $@!"
@@ -99,7 +101,7 @@ clean:
 .PHONY: clean
 
 install:
-	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Copying securitas$(out_ext) to /usr/local/bin..."
-	@cp securitas$(out_ext) /usr/local/bin
-	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished copying securitas to /usr/local/bin!"
+	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Copying securitas$(out_ext) to $(prefix)..."
+	@cp securitas$(out_ext) $(prefix)
+	@printf "\033[1m[POLYBUILD]\033[0m %s\n" "Finished copying securitas$(out_ext) to $(prefix)!"
 .PHONY: install
